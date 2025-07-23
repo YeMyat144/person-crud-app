@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using PersonCrud.Api.Models;
 
@@ -38,10 +40,16 @@ public static class PersonEndpoints
             }
         }).WithName("GetPersonbyId");
 
-        app.MapPost("/api/people", async (AppDbContext context, Person person) =>
+        app.MapPost("/api/people", async (IValidator<Person> personValidator, AppDbContext context, Person person) =>
         {
             try
             {
+                var validationResult = await personValidator.ValidateAsync(person);
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
+
                 context.People.Add(person);
                 await context.SaveChangesAsync();
                 return Results.CreatedAtRoute("GetPersonbyId", new { id = person.Id }, person);
@@ -52,10 +60,15 @@ public static class PersonEndpoints
             }
         }).WithName("CreatePerson");
 
-        app.MapPut("/api/people/{id:int}", async (int id, AppDbContext context, Person person) =>
+        app.MapPut("/api/people/{id:int}", async (IValidator<Person> personValidator, int id, AppDbContext context, Person person) =>
         {
             try
             {
+                var validationResult = await personValidator.ValidateAsync(person);
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
                 if (id != person.Id)
                 {
                     return Results.BadRequest("ID mismatch.");

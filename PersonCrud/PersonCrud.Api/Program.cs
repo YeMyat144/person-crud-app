@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PersonCrud.Api.Endpoints;
 using PersonCrud.Api.Models;
+using FluentValidation;
+using PersonCrud.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
-
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // registering AppDbContext in the DI container
 // It registered as Scoped lifetime
@@ -22,6 +23,8 @@ builder.Services.AddCors(options =>
                  .AllowAnyMethod();
        });
 });
+
+builder.Services.AddScoped<IValidator<Person>, PersonValidator>();
 
 var app = builder.Build();
 

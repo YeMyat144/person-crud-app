@@ -15,7 +15,8 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Person>(mb =>
         {
-            // mb.Property(p => p.FirstName).IsRequired().HasMaxLength(30);
+            mb.Property(p => p.FirstName).IsRequired().HasMaxLength(30);
+            mb.Property(p => p.LastName).IsRequired().HasMaxLength(30);
             mb.HasData(
                 new Person { Id = 1, FirstName = "John", LastName = "Doe" },
                 new Person { Id = 2, FirstName = "Jane", LastName = "Smith" }
